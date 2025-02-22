@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+{% set prof_list = ['Врач', 'Хирург', 'Космонавт', 'Чиловый парень'] %}
+{% if "ol" == list %}
+       <ol>
+              <li>proffesional</li>
+              {% for proffesional in prof_list %}
+              <li>{{ proffesional }}</li>
+              {% endfor %}
+       </ol>
+{% elif "ul" == list %}
+       <ul>
+              {% for proffesional in prof_list %}
+              <li>{{ proffesional }}</li>
+              {% endfor %}
+       </ul>
+{% else %}
+{% for proffesional in user_list %}
+<h1>{{ proffesional }}</h1>
+{% endfor %}
+{% endif %}
+{% endblock %}

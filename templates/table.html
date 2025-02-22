@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% endblock %}
+{% block content %}
+<h2>Оформление каюты</h2>
+{% if year < 21 %}
+       <img src="/static/img/young.jpg" alt="Фотография красивого пейзажа" width="600" height="400">
+{% else %}
+       <img src="/static/img/old.jpg" alt="Фотография красивого пейзажа" width="600" height="400">
+{% endif %}
+{% if sex == "male" %}
+    {% set a = "blue" %}
+{% else %}
+    {% set a = "red" %}
+{% endif %}
+<div style="width: 600px;
+            position: relative;
+            height: 400px;
+            left:600px;
+            top:-400px;
+            background: {{ a }};
+filter: saturate({{ 100 - year }}%)"></div>
+{% endblock %}
