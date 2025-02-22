@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Случайный член экипажа</h1>
+
+  {% if member %}
+    <h2>{{ member.name }} {{ member.surname }}</h2>
+    <img src="{{ member.photo }}" alt="Фото {{ member.name }} {{ member.surname }}" width="200">
+    <h3>Профессии:</h3>
+    <ul>
+      {% for profession in member.professions %}
+        <li>{{ profession }}</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Информация о члене экипажа не найдена.</p>
+  {% endif %}
+{% endblock %}
