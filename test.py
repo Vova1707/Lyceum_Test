@@ -20,6 +20,7 @@ def member():
     member = random.choice(crew_data)
     return render_template('member.html', member=member)
 
+
 @app.route('/gallery', methods=['GET', 'POST'])
 def gallery():
     form = GalleryForm()
