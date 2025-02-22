@@ -1,4 +1,5 @@
 import os
+import random
 
 from werkzeug.utils import secure_filename
 
@@ -11,6 +12,13 @@ import json
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
+
+@app.route('/member')
+def member():
+    with open('templates/crew.json', 'r', encoding='utf-8') as f:
+        crew_data = json.load(f)
+    member = random.choice(crew_data)
+    return render_template('member.html', member=member)
 
 @app.route('/gallery', methods=['GET', 'POST'])
 def gallery():
