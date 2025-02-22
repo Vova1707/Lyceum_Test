@@ -1,11 +1,30 @@
-from forms import LoginForm
-from flask import Flask
+import os
+
+from werkzeug.utils import secure_filename
+
+from forms import LoginForm, GalleryForm
+from flask import Flask, url_for
 from flask import request, render_template, redirect
 import json
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
+
+@app.route('/gallery', methods=['GET', 'POST'])
+def gallery():
+    form = GalleryForm()
+    if form.validate_on_submit():
+        f = form.file.data
+        filename = secure_filename(f.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        f.save(filepath)
+        return redirect(url_for('gallery'))
+    image_files = [f for f in os.listdir(app.config['UPLOAD_FOLDER']) if os.path.isfile(os.path.join(app.config['UPLOAD_FOLDER'], f))]
+    image_urls = [url_for('static', filename=os.path.join('img/', img)) for img in image_files]
+    print(image_urls)
+    return render_template('galery.html', title='Галерея', form=form, images=image_urls)
 
 
 @app.route("/<level>")
@@ -44,4 +63,4 @@ def news():
 
 
 if __name__ == "__main__":
-    app.run(port=8081, host="127.0.0.1")
+    app.run(port=8082, host="127.0.0.1")
