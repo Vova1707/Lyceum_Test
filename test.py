@@ -7,6 +7,8 @@ from forms import LoginForm, GalleryForm
 from flask import Flask, url_for
 from flask import request, render_template, redirect
 import json
+from data import db_session
+from data.users import User, Jobs
 
 
 app = Flask(__name__)
@@ -36,7 +38,6 @@ def gallery():
     return render_template('galery.html', title='Галерея', form=form, images=image_urls)
 
 
-@app.route("/<level>")
 @app.route("/index/<level>")
 def index(level):
     return render_template('index.html', level=level)
@@ -66,10 +67,17 @@ def login():
 
 @app.route('/distribution')
 def news():
-    with open("data/distribution.json", "rt", encoding="utf8") as f:
+    with open("fixtures/distribution.json", "rt", encoding="utf8") as f:
         news_list = json.loads(f.read())
     return render_template('distribution.html', news=news_list)
 
+@app.route('/')
+def users():
+    db_sess = db_session.create_session()
+    users = db_sess.query(User).all()
+    return render_template('users.html', users=users)
 
 if __name__ == "__main__":
+    db_session.global_init("db/blogs.db")
+    db_sess = db_session.create_session()
     app.run(port=8082, host="127.0.0.1")
