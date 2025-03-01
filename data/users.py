@@ -23,6 +23,10 @@ class User(SqlAlchemyBase):
         sqlalchemy.DateTime, default=datetime.datetime.now
     )
 
+    def __repr__(self):
+        return f"<Colonist> {self.id} {self.surname} {self.name}"
+
+
 class Jobs(SqlAlchemyBase):
     __tablename__ = "jobs"
 
@@ -37,3 +41,6 @@ class Jobs(SqlAlchemyBase):
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_finished = sqlalchemy.Column(sqlalchemy.Boolean, default=True)
+
+    def __repr__(self):
+        return f'<Job> {self.job}'

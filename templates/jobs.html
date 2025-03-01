@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Works.log</h1>
+{% for job in jobs%}
+<table class="table table-striped table-bordered">
+    <thead>
+                <tr>
+                    <th>Название работы</th>
+                    <th>Ответственный</th>
+                    <th>Продолжительность</th>
+                    <th>ID Команды</th>
+                    <th>Завершена</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ job.job }}</td>
+                    <td>{{ users[job.id] }}</td>
+                    <td>{{ job.work_size }}</td>
+                    <td>{{ job.collaborators }}</td>
+                    <td>
+                        {% if job.is_finished %}
+                            Да
+                        {% else %}
+                            Нет
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+{% endfor %}
+{% endblock %}

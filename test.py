@@ -9,6 +9,8 @@ from flask import request, render_template, redirect
 import json
 from data import db_session
 from data.users import User, Jobs
+from data.db_session import global_init, create_session
+
 
 
 app = Flask(__name__)
@@ -74,10 +76,15 @@ def news():
 @app.route('/')
 def users():
     db_sess = db_session.create_session()
-    users = db_sess.query(User).all()
-    return render_template('users.html', users=users)
+    jobs = db_sess.query(Jobs).all()
+    users = {}
+    for job in jobs:
+        usera = db_sess.query(User).filter(User.id == job.team_leader)
+        for user in usera:
+            users[job.id] = f'{user.name} {user.surname}'
+    return render_template('jobs.html', jobs=jobs, users=users)
 
 if __name__ == "__main__":
     db_session.global_init("db/blogs.db")
-    db_sess = db_session.create_session()
     app.run(port=8082, host="127.0.0.1")
+
