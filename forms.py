@@ -30,14 +30,21 @@ class RegisterForm(FlaskForm):
 
 
 class JobsForm(FlaskForm):
-    job_title = PasswordField('Название работы', validators=[DataRequired()])
-    work_size = PasswordField('Размер работы', validators=[DataRequired()])
+    job_title = StringField('Название работы', validators=[DataRequired()])
+    work_size = IntegerField('Размер работы', validators=[DataRequired()])
     coloborators = StringField('Колобораторы', validators=[DataRequired()])
     submit = SubmitField("Сохранить")
 
 
 class EditJobsForm(FlaskForm):
-    job_title = PasswordField('Название работы', validators=[DataRequired()])
-    work_size = PasswordField('Размер работы', validators=[DataRequired()])
+    job_title = StringField('Название работы', validators=[DataRequired()])
+    work_size = IntegerField('Размер работы', validators=[DataRequired()])
     coloborators = StringField('Колобораторы', validators=[DataRequired()])
+    submit = SubmitField("Сохранить")
+
+
+class DepartmentForm(FlaskForm):
+    title = StringField('Название', validators=[DataRequired()])
+    members = StringField('Члены экипажа', validators=[DataRequired()])
+    email = EmailField('Почта', validators=[DataRequired()])
     submit = SubmitField("Сохранить")
