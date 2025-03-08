@@ -4,13 +4,13 @@ import random
 from werkzeug.utils import secure_filename
 
 from data.db_session import create_session
-from forms import LoginForm, GalleryForm, RegisterForm, JobsForm
-from flask import Flask, url_for, request, flash
+from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm
+from flask import Flask, url_for, request, flash, abort
 from flask import render_template, redirect
 import json
 from data import db_session
 from data.users import User, Jobs
-from flask_login import LoginManager, login_required, logout_user, login_user
+from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
@@ -35,14 +35,14 @@ def jobs():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         job = Jobs(
-            team_leader=form.team_leader,
-            job=form.job_title,
-            work_size=form.work_size,
-            collaborators=form.coloborators,
+            team_leader=current_user.id,
+            job=form.job_title.data,
+            work_size=form.work_size.data,
+            collaborators=form.coloborators.data,
         )
         db_sess.add(job)
         db_sess.commit()
-        return redirect('/login')
+        return redirect('/')
     return render_template('jobs_form.html', title='Регистрация', form=form)
 
 
@@ -156,6 +156,54 @@ def users():
             users[job.id] = f'{user.name} {user.surname}'
     return render_template('jobs.html', jobs=jobs, users=users)
 
+@app.route('/jobs/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_jobs(id):
+    form = EditJobsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        if current_user.id != 7:
+            jobs = db_sess.query(Jobs).filter(Jobs.id == id, Jobs.team_leader == current_user.id).first()
+        else:
+            jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if jobs:
+            form.coloborators.data = jobs.collaborators
+            form.work_size.data = jobs.work_size
+            form.job_title.data = jobs.job
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        if current_user.id != 7:
+            jobs = db_sess.query(Jobs).filter(Jobs.id == id, Jobs.team_leader == current_user.id).first()
+        else:
+            jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
+        if jobs:
+            jobs.collaborators = form.coloborators.data
+            jobs.work_size = form.work_size.data
+            jobs.job = form.job_title.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('jobs_edit.html',
+                           title='Редактирование новости',
+                           form=form
+                           )
+
+@app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).filter(Jobs.id == id,
+                                      Jobs.team_leader == current_user.id
+                                      ).first()
+    if jobs:
+        db_sess.delete(jobs)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
 
 @app.route('/logout')
 @login_required
