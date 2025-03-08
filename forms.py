@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileRequired
-from wtforms import PasswordField, SubmitField, IntegerField, FileField
+from wtforms import FileField,  PasswordField, StringField, SubmitField, EmailField, IntegerField
 from wtforms.validators import DataRequired
 
 
@@ -17,11 +17,6 @@ class GalleryForm(FlaskForm):
     submit = SubmitField("Сохранить")
 
 
-from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, TextAreaField, SubmitField, EmailField, IntegerField
-from wtforms.validators import DataRequired
-
-
 class RegisterForm(FlaskForm):
     email = EmailField('Почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
@@ -32,3 +27,11 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Войти')
     position = StringField('Позиция', validators=[DataRequired()])
     speciality = StringField('Специальность', validators=[DataRequired()])
+
+
+class JobsForm(FlaskForm):
+    team_leader = IntegerField('id Тим Лида', validators=[DataRequired()])
+    job_title = PasswordField('Название работы', validators=[DataRequired()])
+    work_size = PasswordField('Размер работы', validators=[DataRequired()])
+    coloborators = StringField('Колобораторы', validators=[DataRequired()])
+    submit = SubmitField("Сохранить")
