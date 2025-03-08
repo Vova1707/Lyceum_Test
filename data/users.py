@@ -6,12 +6,20 @@ from data.db_session import SqlAlchemyBase
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
+
+class Category(SqlAlchemyBase):
+    __tablename__ = "category"
+
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
+    title = sqlalchemy.Column(sqlalchemy.String)
+
 class User(SqlAlchemyBase, UserMixin):
     __tablename__ = "users"
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     surname = sqlalchemy.Column(sqlalchemy.String, default="фамилия")
-    name = sqlalchemy.Column(sqlalchemy.String, default="фамилия")
+    name = sqlalchemy.Column(sqlalchemy.String, default="имя")
     age = sqlalchemy.Column(sqlalchemy.Integer, default="возраст")
     position = sqlalchemy.Column(sqlalchemy.String, default="должность")
     speciality = sqlalchemy.Column(sqlalchemy.String, default="профессия")
