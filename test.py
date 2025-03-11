@@ -8,6 +8,7 @@ from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm, 
 from flask import Flask, url_for, request, flash, abort
 from flask import render_template, redirect
 import json
+from job_api import jobs_api
 from data import db_session
 from data.users import User, Jobs, Department
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
@@ -15,6 +16,7 @@ from flask_login import LoginManager, login_required, logout_user, login_user, c
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
+app.register_blueprint(jobs_api)
 
 # инициализируем LoginManager
 login_manager = LoginManager()
@@ -300,4 +302,3 @@ def logout():
 if __name__ == "__main__":
     db_session.global_init("db/blogs.db")
     app.run(port=8082, host="127.0.0.1")
-
