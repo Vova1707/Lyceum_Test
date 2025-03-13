@@ -6,7 +6,7 @@ jobs_api = Blueprint('jobs_api', __name__, url_prefix='/api/jobs')
 
 
 @jobs_api.route('<int:id>')
-def get_jobs(id):
+def q_1(id):
     db_sess = create_session()
     job = db_sess.query(Jobs).filter(Jobs.id == id).first()
     db_sess.close()
