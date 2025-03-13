@@ -5,13 +5,13 @@ from data.users import Jobs
 jobs_api = Blueprint('jobs_api', __name__, url_prefix='/api/jobs')
 
 
-@jobs_api.route('')
-def get_jobs():
-    session = create_session()
-    jobs = session.query(Jobs).all()
-    session.close()
+@jobs_api.route('<int:id>')
+def get_jobs(id):
+    db_sess = create_session()
+    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
+    db_sess.close()
     jobs_list = []
-    for job in jobs:
+    if job:
         job_dict = {
             'id': job.id,
             'work_size': job.work_size,
