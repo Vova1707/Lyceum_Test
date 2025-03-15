@@ -64,3 +64,4 @@ def edit_jobs(id):
                            title='Редактирование новости',
                            form=form
                            )
+
