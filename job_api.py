@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, abort, redirect, request, render_template
 from flask_login import login_required, current_user
 from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm, DepartmentForm
+from data.users import User, Jobs, Department
 
 from data.db_session import create_session
 from data.users import Jobs
@@ -8,7 +9,7 @@ from data.users import Jobs
 jobs_api = Blueprint('jobs_api', __name__, url_prefix='/api/jobs/')
 
 
-@jobs_api.route('all')
+@jobs_api.route('')
 def all():
     db_sess = create_session()
     jobs = db_sess.query(Jobs).all()
@@ -43,8 +44,9 @@ def q_1(id):
     return jsonify(jobs_list)
 
 
-@jobs_api.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
-def news_delete(id):
+@jobs_api.route('delete/<int:id>', methods=['GET', 'POST'])
+def newsa_delete(id):
+
     db_sess = create_session()
     jobs = db_sess.query(Jobs).filter(Jobs.id == id).first()
     if jobs:
@@ -55,8 +57,37 @@ def news_delete(id):
     return redirect('/')
 
 
-@jobs_api.route('add/<int:id>', methods=['GET', 'POST'])
-def edit_jobs(id):
+@jobs_api.route('add', methods=['GET', 'POST'])
+def edit_jobs():
+    form = EditJobsForm()
+    if request.method == "GET":
+        db_sess = create_session()
+        jobs = Jobs()
+        print(Jobs)
+        if jobs:
+            form.coloborators.data = jobs.collaborators
+            form.work_size.data = jobs.work_size
+            form.job_title.data = jobs.job
+        else:
+            abort(404)
+    if form.validate_on_submit():
+        db_sess = create_session()
+        jobs = Jobs()
+        if jobs:
+            jobs.collaborators = form.coloborators.data
+            jobs.work_size = form.work_size.data
+            jobs.job = form.job_title.data
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('jobs_edit.html',
+                           title='Редактирование новости',
+                           form=form
+                           )
+
+@jobs_api.route('edit/<int:id>', methods=['GET', 'POST'])
+def edit_jobss(id):
     form = EditJobsForm()
     if request.method == "GET":
         db_sess = create_session()
@@ -82,4 +113,3 @@ def edit_jobs(id):
                            title='Редактирование новости',
                            form=form
                            )
-
