@@ -9,6 +9,7 @@ from flask import Flask, url_for, request, flash, abort, jsonify
 from flask import render_template, redirect
 import json
 from job_api import jobs_api
+from user_api import user_api
 from data import db_session
 from data.users import User, Jobs, Department
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
@@ -17,6 +18,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
 app.register_blueprint(jobs_api)
+app.register_blueprint(user_api)
 from flask import make_response
 
 @app.errorhandler(404)
