@@ -1,3 +1,4 @@
+import requests
 from flask import Blueprint, jsonify, abort, redirect, request, render_template, flash, url_for
 from flask_login import login_required, current_user, login_user
 from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm, DepartmentForm
@@ -99,3 +100,37 @@ def edit_user(id):
             return render_template('login.html')
     print(request.method)
     return render_template('login.html')
+
+
+@user_api.route('show')
+def show():
+    server_address = 'http://geocode-maps.yandex.ru/1.x/?'
+    api_key = '8013b162-6b42-4997-9691-77b7074026e0'
+    geocode = 'Австралия'
+    geocoder_request = f'{server_address}apikey={api_key}&geocode={geocode}&format=json'
+    response = requests.get(geocoder_request)
+    json_response = response.json()
+    toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+    toponym_coodrinates = toponym["Point"]["pos"]
+    main_coords = map(float, toponym_coodrinates.split())
+    params = {
+        "ll": ",".join(map(str, main_coords)),
+        "spn": ",".join(['0.18', '0.18']),
+        "apikey": "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13",
+    }
+    map_file = 'map.png'
+    get_response(map_file, params)
+    with open(map_file, "wb") as file:
+        file.write(response.content)
+    return render_template('show.html', photo=map_file)
+
+
+def get_response(map_file, params):
+    api_server = "https://static-maps.yandex.ru/v1"
+    response = requests.get(api_server, params=params)
+
+    if not response:
+        print('Ошибка выполнения запроса:')
+        print('Http статус:', response.status_code, '(', response.reason, ')')
+    with open(map_file, 'wb') as file:
+        file.write(response.content)
