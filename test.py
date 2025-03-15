@@ -1,56 +1,35 @@
-from flask import Blueprint, jsonify
-from data.db_session import create_session
-from data.users import Jobs
-
-test = Blueprint('test', __name__, url_prefix='/api/test')
+from requests import get
 
 
-@test.route('/1/<int:id>')
-def get_jobs(id):
-    db_sess = create_session()
-    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
-    db_sess.close()
-    jobs_list = []
-    if job:
-        job_dict = {
-            'id': job.id,
-            'work_size': job.work_size,
-            'collaborators': job.collaborators,
-            'team_leader': job.team_leader,
-        }
-        jobs_list.append(job_dict)
-    return jsonify(jobs_list)
-
-@test.route('')
-def jobs():
-    db_sess = create_session()
-    jobs = db_sess.query(Jobs).all()
-    db_sess.close()
-    jobs_list = []
-    for job in jobs:
-        job_dict = {
-            'id': job.id,
-            'work_size': job.work_size,
-            'collaborators': job.collaborators,
-            'team_leader': job.team_leader,
-        }
-        jobs_list.append(job_dict)
-    return jsonify(jobs_list)
+def test_get_all():
+    if get('http://localhost:8062/api/jobs/all').json() != []:
+        return True
+    return False
 
 
-@test.route('/2/<int:id>')
-def error_two(id):
-    db_sess = create_session()
-    job = db_sess.query(Jobs).filter(Jobs.id == id).first()
-    db_sess.close()
-    jobs_list = []
-    if job:
-        job_dict = {
-            'id': job.id,
-            'work_size': job.work_size,
-            'collaborators': job.collaborators,
-            'team_leader': job.team_leader,
-        }
-        jobs_list.append(job_dict)
-    jobs_list.append('Нет такой работы')
-    return jsonify(jobs_list)
+def test_get_one():
+    if get('http://localhost:8062/api/jobs/2').json():
+        return True
+    return False
+
+
+def test_add_job():
+    if get('http://localhost:8062/api/jobs/2').json():
+        return True
+    return False
+
+def test_delete_job():
+    if get('http://localhost:8062/api/delete/2').json():
+        return True
+    return False
+
+
+if __name__ == '__main__':
+    tests = {'test_get_all': test_get_all(), 'test_get_one': test_get_one(), 'test_add_job': test_add_job(), 'test_delete_job': test_delete_job()}
+    error = 0
+    for test in tests:
+        if not tests[test]:
+            error = 1
+            print(f'ОШИБКА В {test}')
+    if not error:
+        print('ОК')

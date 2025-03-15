@@ -5,21 +5,23 @@ from werkzeug.utils import secure_filename
 
 from data.db_session import create_session
 from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm, DepartmentForm
-from flask import Flask, url_for, request, flash, abort
+from flask import Flask, url_for, request, flash, abort, jsonify
 from flask import render_template, redirect
 import json
 from job_api import jobs_api
 from data import db_session
 from data.users import User, Jobs, Department
-from test import test
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
-app.register_blueprint(test)
 app.register_blueprint(jobs_api)
+from flask import make_response
 
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not found'}), 404)
 
 # инициализируем LoginManager
 login_manager = LoginManager()
@@ -304,4 +306,4 @@ def logout():
 
 if __name__ == "__main__":
     db_session.global_init("db/blogs.db")
-    app.run(port=8082, host="127.0.0.1")
+    app.run(port=8062, host="127.0.0.1")
