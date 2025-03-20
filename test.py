@@ -38,7 +38,7 @@ def test_rest_api_delete_user():
 
 
 if __name__ == '__main__':
-    print('Тесты Rest-Api:')
+    print('Тесты Rest-Api User:')
     tests = {'test_rest_api_get_one_user': test_rest_api_get_one_user(), 'test_rest_api_add_user': test_rest_api_add_user(), 'get_all_users': get_all_users(), 'test_rest_api_delete_user': test_rest_api_delete_user()}
     for test in tests:
         print(f'{test}: {tests[test]}')

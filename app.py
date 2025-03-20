@@ -16,6 +16,7 @@ from data.users import User, Jobs, Department
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
 from flask_restful import reqparse, abort, Api, Resource
 import users_resource
+import jobs_resource
 
 app = Flask(__name__)
 api = Api(app)
@@ -23,11 +24,15 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
 app.register_blueprint(jobs_api)
 app.register_blueprint(user_api)
-# для списка объектов
+# для списка объектов User
 api.add_resource(users_resource.UsersListResource, '/api/v1/users')
-
-# для одного объекта
+# для одного объекта User
 api.add_resource(users_resource.UsersResource, '/api/v1/users/<int:user_id>')
+
+# для списка объектов Jobs
+api.add_resource(jobs_resource.JobsListResource, '/api/v1/jobs')
+# для одного объекта Jobs
+api.add_resource(jobs_resource.JobsResource, '/api/v1/jobs/<int:job_id>')
 
 @app.errorhandler(404)
 def not_found(error):

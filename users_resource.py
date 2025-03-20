@@ -32,10 +32,9 @@ class UsersListResource(Resource):
     def get(self):
         session = db_session.create_session()
         users = session.query(User).all()
-        return jsonify({'news': [{'id': item.id, 'name': item.name, 'surname': item.surname} for item in users]})
+        return jsonify({'users': [{'id': item.id, 'name': item.name, 'surname': item.surname} for item in users]})
 
     def post(self):
-        print(1)
         session = db_session.create_session()
         user = User(
             name = 'Vova',
