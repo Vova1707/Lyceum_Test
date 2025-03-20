@@ -24,12 +24,6 @@ class User(SqlAlchemyBase, UserMixin):
     position = sqlalchemy.Column(sqlalchemy.String, default="должность")
     speciality = sqlalchemy.Column(sqlalchemy.String, default="профессия")
     address = sqlalchemy.Column(sqlalchemy.String, default="адрес")
-    email = sqlalchemy.Column(
-        sqlalchemy.String, unique=True, nullable=True, default="электронная почта"
-    )
-    hashed_password = sqlalchemy.Column(
-        sqlalchemy.String, unique=True, nullable=True, default="хэшированный пароль"
-    )
     modified_date = sqlalchemy.Column(
         sqlalchemy.DateTime, default=datetime.datetime.now
     )
