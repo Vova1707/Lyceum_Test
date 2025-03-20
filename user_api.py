@@ -7,6 +7,7 @@ from data.users import User, Jobs, Department
 from data.db_session import create_session
 from data.users import Jobs
 
+
 user_api = Blueprint('user_api', __name__, url_prefix='/api/users/')
 
 
@@ -101,7 +102,7 @@ def edit_user(id):
     print(request.method)
     return render_template('login.html')
 
-
+# не очень работает поэтому не трогай
 @user_api.route('show')
 def show():
     server_address = 'http://geocode-maps.yandex.ru/1.x/?'

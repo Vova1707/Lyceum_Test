@@ -8,18 +8,26 @@ from forms import LoginForm, GalleryForm, RegisterForm, JobsForm, EditJobsForm, 
 from flask import Flask, url_for, request, flash, abort, jsonify
 from flask import render_template, redirect
 import json
+from flask import make_response
 from job_api import jobs_api
 from user_api import user_api
 from data import db_session
 from data.users import User, Jobs, Department
 from flask_login import LoginManager, login_required, logout_user, login_user, current_user
+from flask_restful import reqparse, abort, Api, Resource
+import users_resource
 
 app = Flask(__name__)
+api = Api(app)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 app.config['UPLOAD_FOLDER'] = 'C:/Users/konde/PycharmProjects/Test_10/static/k'
 app.register_blueprint(jobs_api)
 app.register_blueprint(user_api)
-from flask import make_response
+# для списка объектов
+api.add_resource(users_resource.UsersListResource, '/api/v1/users')
+
+# для одного объекта
+api.add_resource(users_resource.UsersResource, '/api/v1/users/<int:user_id>')
 
 @app.errorhandler(404)
 def not_found(error):
