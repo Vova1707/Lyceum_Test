@@ -55,6 +55,7 @@ def test_rest_api_delete_jobs():
     return get('http://localhost:8062/api/v1/jobs/1').json()
 
 
+
 if __name__ == '__main__':
     print('Тесты Rest-Api')
     print('User:')
