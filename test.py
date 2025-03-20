@@ -12,20 +12,26 @@ def test_get_one():
 def test_add_job():
     return get('http://127.0.0.1:8062/api/jobs/add')
 
+
 def test_edit_job():
     return get('http://localhost:8062/api/jobs/edit/1')
+
 
 def test_delete_job():
     return get('http://localhost:8062/api/jobs/delete/2')
 
+
 def test_rest_api_get_one_user():
     return get('http://localhost:8062/api/v1/users/1').json()
+
 
 def test_rest_api_add_user():
     return post('http://localhost:8062/api/v1/users').json()
 
+
 def get_all_users():
     return get('http://localhost:8062/api/v1/users').json()
+
 
 def test_rest_api_delete_user():
     return get('http://localhost:8062/api/v1/users/7').json()
