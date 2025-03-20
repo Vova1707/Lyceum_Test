@@ -35,12 +35,12 @@ class UsersListResource(Resource):
         return jsonify({'news': [{'id': item.id, 'name': item.name, 'surname': item.surname} for item in users]})
 
     def post(self):
-        args = parser.parse_args()
+        print(1)
         session = db_session.create_session()
         user = User(
-            name=args['name'],
-            surname=args['surname'],
-            age=args['age'],
+            name = 'Vova',
+            surname='surname',
+            age=11,
         )
         session.add(user)
         session.commit()
