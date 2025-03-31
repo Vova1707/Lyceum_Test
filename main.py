@@ -43,11 +43,10 @@ def main():
             'end_session': False
         }
     }
-
-    # Отправляем request.json и response в функцию handle_dialog.
-    # Она сформирует оставшиеся поля JSON, которые отвечают
-    # непосредственно за ведение диалога
-    handle_dialog(request.json, response)
+    if not response['session']['slon']:
+        handle_dialog(request.json, response)
+    else:
+        handle_dialog_2(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
@@ -59,10 +58,6 @@ def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
     if req['session']['new']:
-        # Это новый пользователь.
-        # Инициализируем сессию и поприветствуем его.
-        # Запишем подсказки, которые мы ему покажем в первый раз
-
         sessionStorage[user_id] = {
             'suggests': [
                 "Не хочу.",
@@ -70,20 +65,10 @@ def handle_dialog(req, res):
                 "Отстань!",
             ]
         }
-        # Заполняем текст ответа
         res['response']['text'] = 'Привет! Купи слона!'
-        # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
 
-    # Сюда дойдем только, если пользователь не новый,
-    # и разговор с Алисой уже был начат
-    # Обрабатываем ответ пользователя.
-    # В req['request']['original_utterance'] лежит весь текст,
-    # что нам прислал пользователь
-    # Если он написал 'ладно', 'куплю', 'покупаю', 'хорошо',
-    # то мы считаем, что пользователь согласился.
-    # Подумайте, всё ли в этом фрагменте написано "красиво"?
     if req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
@@ -92,14 +77,41 @@ def handle_dialog(req, res):
         'Я покупаю',
         'Я куплю',
     ]:
-        # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
 
-    # Если нет, то убеждаем его купить слона!
-    res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+    res['response']['text'] = "Все говорят а ты купи слона!"
+    res['response']['buttons'] = get_suggests(user_id)
+
+def handle_dialog_2(req, res):
+    user_id = req['session']['user_id']
+
+    if req['session']['crol_one']:
+        sessionStorage[user_id] = {
+            'suggests': [
+                "Не хочу.",
+                "Не буду.",
+                "Отстань!",
+            ]
+        }
+        res['response']['text'] = 'А теперь купи кролика'
+        res['response']['buttons'] = get_suggests(user_id)
+        return
+
+    if req['request']['original_utterance'].lower() in [
+        'ладно',
+        'куплю',
+        'покупаю',
+        'хорошо',
+        'Я покупаю',
+        'Я куплю',
+    ]:
+        res['response']['text'] = 'Кролика можно найти на Яндекс.Маркете!'
+        res['response']['end_session'] = True
+        return
+
+    res['response']['text'] = "Все говорят а ты купи кролика!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
