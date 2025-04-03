@@ -1,15 +1,14 @@
 from flask import Flask, request, jsonify
+from flask_ngrok import run_with_ngrok
 import logging
 import json
 import random
 
 app = Flask(__name__)
-
+import os
+os.environ["NGROK_AUTHTOKEN"] = "2v8KecKJaS7kzMijANVCm21Tvbv_UdcoSi4KEZKFQYpN72Uz"
+run_with_ngrok(app)
 logging.basicConfig(level=logging.INFO)
-
-# создаем словарь, в котором ключ — название города,
-# а значение — массив, где перечислены id картинок,
-# которые мы записали в прошлом пункте.
 
 cities = {
     'москва': ['1540737/daa6e420d33102bf6947',
@@ -20,8 +19,6 @@ cities = {
               '3450494/aca7ed7acefde22341bdc']
 }
 
-# создаем словарь, где для каждого пользователя
-# мы будем хранить его имя
 sessionStorage = {}
 
 
