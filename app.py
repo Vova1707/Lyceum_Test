@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, request
 import logging
 import json
@@ -45,7 +46,7 @@ def handle_dialog(res, req):
 
     elif len(cities) == 1:
 
-        res['response']['text'] = 'Этот город в стране - ' + get_country(cities[0])
+        res['response']['text'] = 'Этот город в стране - ' + 'https://yandex.ru/maps/?mode=search&text=' + str(cities)
 
     elif len(cities) == 2:
 
@@ -66,6 +67,7 @@ def get_cities(req):
         if entity['type'] == 'YANDEX.GEO':
 
             if 'city' in entity['value'].keys():
+                print(1)
                 cities.append(entity['value']['city'])
 
     return cities
