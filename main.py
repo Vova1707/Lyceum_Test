@@ -63,7 +63,6 @@ async def stop(update, context):
         await update.message.reply_text("Начните сначала с /start.")
 
 
-
 def main():
     application = Application.builder().token('7227875074:AAEoDFAWXsjZCYkHqMx2RnhTMcgJKzI55gU').build()
     application.add_handler(CommandHandler("start", start))
