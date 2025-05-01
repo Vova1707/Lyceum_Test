@@ -1,23 +1,9 @@
 from telegram.ext import Application, MessageHandler, filters
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import CommandHandler
+import json
 from random import choice
 
-
-poems = [
-    ['Я помню чудное мгновенье:',
-    'Передо мной явилась ты,',
-    'Как мимолетное виденье,',
-    'Как гений чистой красоты.',
-     ],
-
-    [
-    'Буря мглою небо кроет,',
-    'Вихри снежные крутя;',
-    'То, как зверь, она завоет,',
-    'То заплачет, как дитя.',
-     ],
-]
 
 user_data = {}
 
@@ -28,19 +14,13 @@ async def start(update, context):
 
     user = update.effective_user
     user_id = update.message.from_user.id
-    if user_id in user_data.keys():
-        del user_data[user_id]
 
     user_data[user_id] = {
-        "state": "awaiting_line",
-        "poem": choice(poems),
-        "current_line_index": 1,
+        'right': 0,
     }
 
-    first_line = user_data[user_id]["poem"][0]
     await update.message.reply_html(
-        rf"Привет {user.mention_html()}! Я Бот-литератор давай зачитаем с тобой стихотворение!"
-        f"Я начну:\n{first_line}",
+        rf"Привет {user.mention_html()}! Я Бот-Тест отправь файл с тестом!",
         reply_markup=markup
     )
 
@@ -53,29 +33,59 @@ async def stop(update, context):
         await update.message.reply_text("Начните сначала с /start.")
 
 
-
-async def suphler(update, context):
+async def test(update, context):
     user_id = update.message.from_user.id
+    if user_id in user_data.keys():
+        if 'test' in user_data[user_id].keys():
 
-    if user_id in user_data:
-        current_index = user_data[user_id]["current_line_index"]
-        return_text = ''
-        if user_data[user_id]["poem"][current_index] == update.message.text:
-            next_index = current_index + 1
-            if len(user_data[user_id]["poem"]) - 1 <= next_index:
-                if len(user_data[user_id]["poem"]) - 1 == next_index:
-                    return_text += f'Последняя строка:\n{user_data[user_id]["poem"][next_index]}\n'
+            if not 'answers' in user_data[user_id].keys():
+                user_data[user_id]["answers"] = list(user_data[user_id]['test'].keys())
 
-                return_text += 'Конец стиха. Нажмите на старт чтобы начать заново'
-                del user_data[user_id]
+            if user_data[user_id]['answers']:
+                text = ''
+                if not 'question' in user_data[user_id] or not user_data[user_id]["question"]:
+                    user_data[user_id]["question"] = choice(user_data[user_id]['answers'])
+                    text += user_data[user_id]['test'][user_data[user_id]["question"]]['question']
+
+                else:
+                    if user_data[user_id]['test'][user_data[user_id]["question"]]['response'] != update.message.text:
+                        text = 'Неверно'
+                    else:
+                        text = 'Правильно'
+                        user_data[user_id]["right"] += 1
+
+                    del user_data[user_id]['answers'][user_data[user_id]['answers'].index(user_data[user_id]["question"])]
+                    if not user_data[user_id]['answers']:
+                        user_data[user_id]["question"] = None
+                        text += f'\nТест пройден {user_data[user_id]["right"]}/{len(list(user_data[user_id]['test'].keys()))}'
+                    else:
+                        user_data[user_id]["question"] = choice(user_data[user_id]['answers'])
+                        text += f'\n{user_data[user_id]['test'][user_data[user_id]["question"]]['question']}'
+                await update.message.reply_text(text)
             else:
-                return_text += f'{user_data[user_id]["poem"][next_index]}'
-                user_data[user_id]["current_line_index"] = next_index + 1
+                await update.message.reply_text("Тест пройден. Начните сначала с /start. ")
         else:
-            return_text += '\nнет, не так\n'
-            print(user_data[user_id]["poem"][current_index])
-            return_text += f'Начинается с {user_data[user_id]["poem"][current_index][0: len(user_data[user_id]["poem"][current_index]) // 2]}...'
-        await update.message.reply_text(return_text)
+            await update.message.reply_text("Отправьте JSON файл сначала")
+    else:
+        await update.message.reply_text("Начните сначала с /start.")
+
+
+'''            if not user_data[user_id]["answers"]:
+                await update.message.reply_text("Тест пройден, начните заново - /start")
+            else:'''
+
+
+async def load_test_from_json(update, context):
+    user_id = update.message.from_user.id
+    if user_id in user_data.keys():
+        try:
+            file = await update.message.document.get_file()
+            file_content = await file.download_as_bytearray()
+            test_data = json.loads(file_content.decode('utf-8'))
+            user_data[user_id]["test"] = test_data["test"]
+            await update.message.reply_text("JSON файл загружен. Отправьте /test чтобы начать.")
+        except (ValueError, KeyError, AttributeError):
+            await update.message.reply_text("Неверный формат JSON файла. Пожалуйста, загрузите файл в нужном формате.")
     else:
         await update.message.reply_text("Начните сначала с /start.")
 
@@ -85,7 +95,9 @@ def main():
     application = Application.builder().token('7227875074:AAEoDFAWXsjZCYkHqMx2RnhTMcgJKzI55gU').build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("stop", stop))
-    text_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, suphler)
+    application.add_handler(CommandHandler("test", test))
+    application.add_handler(MessageHandler(filters.Document.ALL, load_test_from_json))
+    text_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, test)
     application.add_handler(text_handler)
     application.run_polling()
 
