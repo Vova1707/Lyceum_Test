@@ -1,7 +1,7 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import random
-import datetime
+import wikipedia
 
 
 def main():
@@ -24,15 +24,18 @@ def main():
                 ans_name, ans_surname = 'пользователь', ''
 
 
-            if list(filter(lambda dat: dat in event.obj.message['text'].lower(), ['время', 'число', 'дата', 'день'])):
-                datime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if '?' == event.obj.message['text'][-1]:
+                page = wikipedia.page(event.obj.message['text'])
+                summary = page.summary
+                ans = summary[:1000]
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=f"{ans_name} {ans_surname}: Сейчас {datime}",
+                                 message=ans,
                                  random_id=random.getrandbits(31))
             else:
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=f"{ans_name} {ans_surname} напишите одно из слов: 'время', 'число', 'дата', 'день' в сообщении и узнаете время сейчас",
+                                 message=f"{ans_name} {ans_surname} поставьте вопрос в конце сообщение чтобы я мог на него ответить",
                                  random_id=random.getrandbits(31))
 
 if __name__ == '__main__':
+    wikipedia.set_lang("ru")
     main()
