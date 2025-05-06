@@ -1,7 +1,11 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import random
-from user_autorize import get_pictures
+import datetime
+
+
+
+WEEKDAY = {0: 'был Понедельник', 1:'был Вторник', 2:'была Среда', 3:'был Четерг', 4:'была Пятница', 5:'была Суббота', 6:'было Воскресенье'}
 
 
 def main():
@@ -23,18 +27,15 @@ def main():
             except Exception as e:
                 ans_name, ans_surname = 'пользователь', ''
 
-            pictures = get_pictures()
-            if pictures:
-                photo = pictures[random.randint(0, len(pictures) - 1)]
-                photo_attachment = f"photo{photo['owner_id']}_{photo['id']}"
-
+            try:
+                year, month, day = event.obj.message['text'].split('-')
+                dt = datetime.datetime(year=int(year), month=int(month), day=int(day)).weekday()
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=f"Привет {ans_name} {ans_surname}",
-                                 attachment=photo_attachment,
+                                 message=f"{ans_name} {ans_surname} это {WEEKDAY[dt]}",
                                  random_id=random.getrandbits(31))
-            else:
+            except Exception as e:
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=f"Привет {ans_name} {ans_surname}",
+                                 message=f"Привет {ans_name} {ans_surname}. Я могу сказать, в какой день недели была какая-нибудь дата. Просто введи дату в формате YYYY-MM-DD",
                                  random_id=random.getrandbits(31))
 
 if __name__ == '__main__':
