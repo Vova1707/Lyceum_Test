@@ -1,5 +1,5 @@
 import vk_api
-import datetime
+import os
 
 
 def captcha_handler(captcha):
@@ -42,15 +42,13 @@ def main():
     except vk_api.AuthError as error_msg:
         print(error_msg)
         return
+    upload = vk_api.VkUpload(vk_session)
+    photo = upload.photo_wall(os.listdir(os.getcwd() + '/static/img'))
+
+    vk_photo_id = f"photo{photo[0]['owner_id']}_{photo[0]['id']}"
+    print(photo, vk_photo_id, sep="\n")
     vk = vk_session.get_api()
-    # Используем метод wall.get
-    response = vk.friends.get(fields="bdate, city")
-    if response['items']:
-        for i in sorted(response['items'], key=lambda s: s['last_name']):
-            stroka = f'Фамилия: {i['last_name']}'
-            if 'bdate' in i.keys():
-                stroka += f' ДР {i['bdate']}'
-            print(stroka)
+    vk.wall.post(message="Test", attachments=[vk_photo_id])
 
 
 if __name__ == '__main__':
