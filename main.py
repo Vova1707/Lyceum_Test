@@ -1,6 +1,7 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import random
+import datetime
 
 
 def main():
@@ -22,9 +23,16 @@ def main():
             except Exception as e:
                 ans_name, ans_surname = 'пользователь', ''
 
-            vk.messages.send(user_id=event.obj.message['from_id'],
-                             message=f"Привет {ans_name} {ans_surname}",
-                             random_id=random.getrandbits(31))
+
+            if list(filter(lambda dat: dat in event.obj.message['text'].lower(), ['время', 'число', 'дата', 'день'])):
+                datime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                vk.messages.send(user_id=event.obj.message['from_id'],
+                                 message=f"{ans_name} {ans_surname}: Сейчас {datime}",
+                                 random_id=random.getrandbits(31))
+            else:
+                vk.messages.send(user_id=event.obj.message['from_id'],
+                                 message=f"{ans_name} {ans_surname} напишите одно из слов: 'время', 'число', 'дата', 'день' в сообщении и узнаете время сейчас",
+                                 random_id=random.getrandbits(31))
 
 if __name__ == '__main__':
     main()
