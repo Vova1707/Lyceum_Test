@@ -1,7 +1,7 @@
 import vk_api
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 import random
-import wikipedia
+from user_autorize import get_pictures
 
 
 def main():
@@ -23,19 +23,19 @@ def main():
             except Exception as e:
                 ans_name, ans_surname = 'пользователь', ''
 
+            pictures = get_pictures()
+            if pictures:
+                photo = pictures[random.randint(0, len(pictures) - 1)]
+                photo_attachment = f"photo{photo['owner_id']}_{photo['id']}"
 
-            if '?' == event.obj.message['text'][-1]:
-                page = wikipedia.page(event.obj.message['text'])
-                summary = page.summary
-                ans = summary[:1000]
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=ans,
+                                 message=f"Привет {ans_name} {ans_surname}",
+                                 attachment=photo_attachment,
                                  random_id=random.getrandbits(31))
             else:
                 vk.messages.send(user_id=event.obj.message['from_id'],
-                                 message=f"{ans_name} {ans_surname} поставьте вопрос в конце сообщение чтобы я мог на него ответить",
+                                 message=f"Привет {ans_name} {ans_surname}",
                                  random_id=random.getrandbits(31))
 
 if __name__ == '__main__':
-    wikipedia.set_lang("ru")
     main()
