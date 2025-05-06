@@ -44,13 +44,13 @@ def main():
         return
     vk = vk_session.get_api()
     # Используем метод wall.get
-    response = vk.wall.get(count=5, offset=0)
+    response = vk.friends.get(fields="bdate, city")
     if response['items']:
-        for num, i in response['items']:
-            date, time = datetime.datetime.fromtimestamp(i['date']).strftime('%Y-%m-%d %H:%M:%S').split()
-            print('Номер', num)
-            print(i['text'])
-            print(f'date: {date}, time: {time}')
+        for i in sorted(response['items'], key=lambda s: s['last_name']):
+            stroka = f'Фамилия: {i['last_name']}'
+            if 'bdate' in i.keys():
+                stroka += f' ДР {i['bdate']}'
+            print(stroka)
 
 
 if __name__ == '__main__':
