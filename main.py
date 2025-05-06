@@ -1,55 +1,30 @@
 import vk_api
-import os
-
-
-def captcha_handler(captcha):
-    """ При возникновении капчи вызывается эта функция и ей передается объект
-        капчи. Через метод get_url можно получить ссылку на изображение.
-        Через метод try_again можно попытаться отправить запрос с кодом капчи
-    """
-
-    key = input("Enter captcha code {0}: ".format(captcha.get_url())).strip()
-
-    # Пробуем снова отправить запрос с капчей
-    return captcha.try_again(key)
-
-
-def auth_handler():
-    """ При двухфакторной аутентификации вызывается эта функция. """
-
-    # Код двухфакторной аутентификации,
-    # который присылается по смс или уведомлением в мобильное приложение
-    # или код из приложения - генератора кодов
-    key = input("Enter authentication code: ").strip()
-    # Если: True - сохранить, False - не сохранять.
-    remember_device = True
-
-    return key, remember_device
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
+import random
 
 
 def main():
-    LOGIN, PASSWORD = 'kondrahinvov@yandex.ru', 'Konder12!'
-    login, password = LOGIN, PASSWORD
     vk_session = vk_api.VkApi(
-        login, password,
-        # функция для обработки двухфакторной аутентификации
-        auth_handler=auth_handler,
-        captcha_handler=captcha_handler
-    )
+        token='vk1.a.iWGJ7nURr_L_JftonlcwC-uZzusx6Kz56uVl_ba9W1rpT8kH_AwXEIOxuYKpC1MbZJdaieC2sx-4OANCe_TqEjWXJDKUz-qRha6PFhm49WQ0NQvz0VoMJU1RbPtdOMpUC4ArZqM1EdqSyFnojyQxAmvFQoUGLcwZN6lAwDHn3T6-uM_xx01AhuAa2FFyloLFD2ROX82bk-anrG0gfYz5rw')
 
-    try:
-        vk_session.auth(token_only=True)
-    except vk_api.AuthError as error_msg:
-        print(error_msg)
-        return
-    upload = vk_api.VkUpload(vk_session)
-    photo = upload.photo_wall(os.listdir(os.getcwd() + '/static/img'))
+    longpoll = VkBotLongPoll(vk_session, '230383848')
+    for event in longpoll.listen():
+        if event.type == VkBotEventType.MESSAGE_NEW:
+            print('Новое сообщение:')
+            print('Для меня от:', event.obj.message['from_id'])
+            print('Текст:', event.obj.message['text'])
 
-    vk_photo_id = f"photo{photo[0]['owner_id']}_{photo[0]['id']}"
-    print(photo, vk_photo_id, sep="\n")
-    vk = vk_session.get_api()
-    vk.wall.post(message="Test", attachments=[vk_photo_id])
+            vk = vk_session.get_api()
 
+            ans_user = vk.users.get(user_id=event.obj.message['from_id'])[0]
+            try:
+                ans_name, ans_surname = ans_user['first_name'], ans_user['last_name']
+            except Exception as e:
+                ans_name, ans_surname = 'пользователь', ''
+
+            vk.messages.send(user_id=event.obj.message['from_id'],
+                             message=f"Привет {ans_name} {ans_surname}",
+                             random_id=random.getrandbits(31))
 
 if __name__ == '__main__':
     main()
