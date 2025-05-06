@@ -5,6 +5,7 @@ import requests
 from io import BytesIO
 
 
+
 def map(main_coords, add_params=None):
     map_request = f"http://static-maps.yandex.ru/1.x/?ll={main_coords[0]},{main_coords[1]}&spn=0.18,0.18&l=map"
     if add_params:
